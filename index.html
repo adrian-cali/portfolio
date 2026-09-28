@@ -1162,12 +1162,14 @@
               <p class="text-xs text-slate-500 dark:text-zinc-400 mt-1">Outside the developer</p>
             </div>
           </div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[65vh] overflow-y-auto pr-1">
-            ${GALLERY_IDS.map((id, idx) => `
-              <div onclick="openLightbox(${idx}, 'gallery')" class="group cursor-pointer relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-200 dark:bg-zinc-800 border border-black/5 dark:border-white/10 shadow-sm hover:shadow-md transition-all">
-                <img src="assets/gallery/gallery-${id}" alt="Photo" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/300x400/1877F2/ffffff?text=Photo'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"/>
-              </div>
-            `).join('')}
+          <div class="max-h-[65vh] overflow-y-auto pr-1">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              ${GALLERY_IDS.map((id, idx) => `
+                <div onclick="openLightbox(${idx}, 'gallery')" class="group cursor-pointer relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-200 dark:bg-zinc-800 border border-black/5 dark:border-white/10 shadow-sm hover:shadow-md transition-all">
+                  <img src="assets/gallery/gallery-${id}" alt="Photo" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/300x400/1877F2/ffffff?text=Photo'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"/>
+                </div>
+              `).join('')}
+            </div>
           </div>
         </div>
       `;
