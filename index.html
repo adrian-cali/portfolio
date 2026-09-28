@@ -830,6 +830,7 @@
         title: "Digital Aquarium",
         subtitle: "Autonomous Virtual Ecosystem",
         github: "https://github.com/adrian-cali/digital-aquarium",
+        demo: "https://adrian-calingasin.vercel.app/",
         image: "assets/projects/project-aquarium.png",
         tags: ["HTML5 Canvas", "JavaScript", "LocalStorage", "Physics"],
         description: "Ambient browser ecosystem with autonomous aquatic life, procedural flocking physics, day/night lighting, and local persistence.",
@@ -841,6 +842,7 @@
         title: "Simple Calculator",
         subtitle: "Chained Precision Calculation Engine",
         github: "https://github.com/adrian-cali/simple-calculator",
+        demo: "https://simple-calculator-adcali.vercel.app/",
         image: "assets/projects/project-calculator.png",
         tags: ["Vanilla JS", "HTML5", "CSS3", "Zero Frameworks"],
         description: "Clean, keyboard-accessible calculator with chained calculations, floating precision logic, and session computation history.",
@@ -1194,7 +1196,8 @@
               ${proj.highlights.map(h => `<li class="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-zinc-300"><span class="text-blue-500">✓</span><span>${h}</span></li>`).join('')}
             </ul>
           </div>
-          <div class="pt-4 border-t border-black/10 dark:border-white/10 flex justify-end">
+          <div class="pt-4 border-t border-black/10 dark:border-white/10 flex flex-wrap justify-end gap-3">
+            ${proj.demo ? `<a href="${proj.demo}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border border-[#1877F2] text-[#1877F2] dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 shadow-sm transition-all">View Demo</a>` : ''}
             <a href="${proj.github}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-[#1877F2] hover:bg-blue-600 text-white shadow transition-all">View on GitHub</a>
           </div>
         </div>
