@@ -133,13 +133,11 @@
     }
 
     /* Hover & Active trigger states */
-    .sticker-container:hover .circle-portrait,
     .sticker-container.is-active .circle-portrait {
       transform: scale(0.8) translateY(10px);
       opacity: 0;
     }
 
-    .sticker-container:hover .cutout-sticker,
     .sticker-container.is-active .cutout-sticker {
       transform: scale(1) translateY(0);
       opacity: 1;
@@ -153,10 +151,25 @@
       transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out;
     }
 
-    .sticker-container:hover .badge-item,
     .sticker-container.is-active .badge-item {
       opacity: 1;
       transform: scale(1) translate(0, 0);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .sticker-container:hover .circle-portrait {
+        transform: scale(0.8) translateY(10px);
+        opacity: 0;
+      }
+      .sticker-container:hover .cutout-sticker {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .sticker-container:hover .badge-item {
+        opacity: 1;
+        transform: scale(1) translate(0, 0);
+      }
     }
   </style>
 </head>
@@ -300,7 +313,7 @@
           
           <!-- Interactive Pop-Out Sticker Avatar Section with Smooth Spring Hover Transition -->
           <div class="relative flex-shrink-0 flex items-center justify-center p-4">
-            <div class="sticker-container group/avatar cursor-pointer select-none" onclick="this.classList.toggle('is-active')">
+            <div class="sticker-container group/avatar cursor-pointer select-none" role="button" tabindex="0" aria-label="Toggle portrait cutout" aria-pressed="false" onclick="this.classList.toggle('is-active'); this.setAttribute('aria-pressed', this.classList.contains('is-active'))" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }">
               
               <div class="absolute -inset-3 rounded-full bg-gradient-to-tr from-blue-500/20 via-sky-400/20 to-indigo-500/20 blur-xl opacity-60 group-hover/avatar:opacity-95 transition-opacity duration-300"></div>
 
