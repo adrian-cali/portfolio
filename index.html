@@ -731,7 +731,7 @@
     </button>
 
     <div class="relative z-20 max-w-[96vw] max-h-[96vh] flex items-center justify-center overflow-auto">
-      <img id="lightboxImage" src="" alt="Lightbox View" title="Click to zoom" draggable="false" class="max-w-[94vw] max-h-[94vh] w-auto h-auto object-contain rounded-2xl shadow-2xl select-none touch-pan-y cursor-zoom-in transition-transform duration-200" />
+      <img id="lightboxImage" src="" alt="Lightbox View" title="Click to zoom" draggable="false" class="max-w-[94vw] max-h-[94vh] w-auto h-auto object-contain rounded-2xl shadow-2xl select-none touch-none cursor-zoom-in transition-transform duration-200" />
     </div>
   </div>
 
@@ -1069,42 +1069,113 @@
     let currentLightboxType = 'pubmats';
     let lightboxSwipeStart = null;
     let lightboxIsZoomed = false;
+    let lightboxScale = 1;
+    let lightboxPan = { x: 0, y: 0 };
+    let lightboxPointers = new Map();
+    let lightboxGesture = null;
+    let suppressLightboxClick = false;
 
-    function toggleLightboxZoom() {
-      lightboxIsZoomed = !lightboxIsZoomed;
-      lightboxImage.classList.toggle('scale-150', lightboxIsZoomed);
+    function applyLightboxTransform() {
+      lightboxImage.style.transform = `translate(${lightboxPan.x}px, ${lightboxPan.y}px) scale(${lightboxScale})`;
+      lightboxIsZoomed = lightboxScale > 1;
       lightboxImage.classList.toggle('cursor-zoom-in', !lightboxIsZoomed);
       lightboxImage.classList.toggle('cursor-zoom-out', lightboxIsZoomed);
+    }
+
+    function toggleLightboxZoom() {
+      lightboxScale = lightboxIsZoomed ? 1 : 1.5;
+      if (lightboxScale === 1) lightboxPan = { x: 0, y: 0 };
+      applyLightboxTransform();
       lightboxImage.title = lightboxIsZoomed ? 'Click to zoom out' : 'Click to zoom';
     }
 
     function resetLightboxZoom() {
       lightboxIsZoomed = false;
-      lightboxImage.classList.remove('scale-150', 'cursor-zoom-out');
+      lightboxScale = 1;
+      lightboxPan = { x: 0, y: 0 };
+      lightboxPointers.clear();
+      lightboxGesture = null;
+      lightboxSwipeStart = null;
+      lightboxImage.style.transform = '';
+      lightboxImage.classList.remove('cursor-zoom-out');
       lightboxImage.classList.add('cursor-zoom-in');
       lightboxImage.title = 'Click to zoom';
     }
 
-    lightboxImage.addEventListener('click', toggleLightboxZoom);
+    lightboxImage.addEventListener('click', () => {
+      if (suppressLightboxClick) {
+        suppressLightboxClick = false;
+        return;
+      }
+      toggleLightboxZoom();
+    });
 
     lightboxImage.addEventListener('pointerdown', event => {
       if (event.pointerType !== 'touch') return;
-      lightboxSwipeStart = { x: event.clientX, y: event.clientY };
+      event.preventDefault();
+      lightboxImage.setPointerCapture(event.pointerId);
+      lightboxPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (lightboxPointers.size === 1) {
+        lightboxSwipeStart = { x: event.clientX, y: event.clientY };
+        lightboxGesture = { type: lightboxScale > 1 ? 'pan' : 'swipe', x: event.clientX, y: event.clientY, panX: lightboxPan.x, panY: lightboxPan.y };
+      } else if (lightboxPointers.size === 2) {
+        const points = [...lightboxPointers.values()];
+        lightboxGesture = {
+          type: 'pinch',
+          distance: Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y),
+          scale: lightboxScale,
+          midX: (points[0].x + points[1].x) / 2,
+          midY: (points[0].y + points[1].y) / 2,
+          panX: lightboxPan.x,
+          panY: lightboxPan.y
+        };
+      }
     });
 
-    lightboxImage.addEventListener('pointerup', event => {
-      if (!lightboxSwipeStart || event.pointerType !== 'touch') return;
-      const deltaX = event.clientX - lightboxSwipeStart.x;
-      const deltaY = event.clientY - lightboxSwipeStart.y;
+    lightboxImage.addEventListener('pointermove', event => {
+      if (!lightboxPointers.has(event.pointerId)) return;
+      event.preventDefault();
+      lightboxPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (lightboxPointers.size >= 2 && lightboxGesture?.type === 'pinch') {
+        const points = [...lightboxPointers.values()];
+        const distance = Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y);
+        const midX = (points[0].x + points[1].x) / 2;
+        const midY = (points[0].y + points[1].y) / 2;
+        lightboxScale = Math.min(4, Math.max(1, lightboxGesture.scale * distance / Math.max(lightboxGesture.distance, 1)));
+        lightboxPan = { x: lightboxGesture.panX + midX - lightboxGesture.midX, y: lightboxGesture.panY + midY - lightboxGesture.midY };
+        if (lightboxScale === 1) lightboxPan = { x: 0, y: 0 };
+        applyLightboxTransform();
+        suppressLightboxClick = true;
+        return;
+      }
+      if (lightboxPointers.size === 1 && lightboxGesture) {
+        const dx = event.clientX - lightboxGesture.x;
+        const dy = event.clientY - lightboxGesture.y;
+        if (lightboxScale > 1 || lightboxGesture.type === 'pan') {
+          lightboxPan = { x: lightboxGesture.panX + dx, y: lightboxGesture.panY + dy };
+          applyLightboxTransform();
+          suppressLightboxClick = true;
+        } else if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          suppressLightboxClick = true;
+        }
+      }
+    });
+
+    function endLightboxPointer(event) {
+      if (!lightboxPointers.has(event.pointerId)) return;
+      const start = lightboxSwipeStart;
+      const dx = start ? event.clientX - start.x : 0;
+      const dy = start ? event.clientY - start.y : 0;
+      const shouldSwipe = event.type === 'pointerup' && lightboxPointers.size === 1 && lightboxScale === 1 && start && Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy);
+      lightboxPointers.delete(event.pointerId);
       lightboxSwipeStart = null;
+      lightboxGesture = null;
+      if (suppressLightboxClick) setTimeout(() => { suppressLightboxClick = false; }, 400);
+      if (shouldSwipe) lightboxNavigate(dx < 0 ? 1 : -1);
+    }
 
-      if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY)) return;
-      lightboxNavigate(deltaX < 0 ? 1 : -1);
-    });
-
-    lightboxImage.addEventListener('pointercancel', () => {
-      lightboxSwipeStart = null;
-    });
+    lightboxImage.addEventListener('pointerup', endLightboxPointer);
+    lightboxImage.addEventListener('pointercancel', endLightboxPointer);
 
     function openModal() {
       modal.classList.remove('opacity-0', 'pointer-events-none');
