@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <title>Adrian Calingasin — Portfolio</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            ios: {
+              blue: '#007AFF',
+              brandBlue: '#1877F2',
+              gray: '#8E8E93',
+              darkBg: '#0A0A0C',
+              darkCard: 'rgba(28, 28, 30, 0.78)',
+              lightCard: 'rgba(255, 255, 255, 0.82)'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .ios-glass {
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+    @keyframes float-slow {
+      0%, 100% { transform: translate(0px, 0px) scale(1); }
+      50% { transform: translate(30px, -40px) scale(1.08); }
+    }
+    @keyframes float-reverse {
+      0%, 100% { transform: translate(0px, 0px) scale(1); }
+      50% { transform: translate(-30px, 35px) scale(0.95); }
+    }
+    .animate-blob-1 { animation: float-slow 18s ease-in-out infinite; }
+    .animate-blob-2 { animation: float-reverse 22s ease-in-out infinite; }
+    
+    .filter-sticker {
+      filter: 
+          drop-shadow(2.5px 0 0 #ffffff)
+          drop-shadow(-2.5px 0 0 #ffffff)
+          drop-shadow(0 2.5px 0 #ffffff)
+          drop-shadow(0 -2.5px 0 #ffffff)
+          drop-shadow(1.8px 1.8px 0 #ffffff)
+          drop-shadow(-1.8px -1.8px 0 #ffffff)
+          drop-shadow(1.8px -1.8px 0 #ffffff)
+          drop-shadow(-1.8px 1.8px 0 #ffffff)
+          drop-shadow(0 18px 26px rgba(0, 0, 0, 0.18));
+    }
+    .dark .filter-sticker {
+      filter: 
+        drop-shadow(2.5px 0 0 #ffffff)
+        drop-shadow(-2.5px 0 0 #ffffff)
+        drop-shadow(0 2.5px 0 #ffffff)
+        drop-shadow(0 -2.5px 0 #ffffff)
+        drop-shadow(1.8px 1.8px 0 #ffffff)
+        drop-shadow(-1.8px -1.8px 0 #ffffff)
+        drop-shadow(1.8px -1.8px 0 #ffffff)
+        drop-shadow(-1.8px 1.8px 0 #ffffff)
+        drop-shadow(0 18px 26px rgba(0, 0, 0, 0.18));
+    }
+
+    /* Sticker Pop-Out & Morph Animation */
+    .sticker-container {
+      position: relative;
+      width: 240px;
+      height: 240px;
+    }
+    @media (min-width: 640px) {
+      .sticker-container {
+        width: 270px;
+        height: 270px;
+      }
+    }
+
+    /* Base circular frame image */
+    .circle-portrait {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      overflow: hidden;
+      border: 5px solid #ffffff;
+      box-shadow: 0 20px 30px rgba(0,0,0,0.15);
+      background-color: #e2e8f0;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out;
+      z-index: 2;
+    }
+    .dark .circle-portrait {
+      border-color: #3f3f46;
+      box-shadow: 0 20px 30px rgba(0,0,0,0.4);
+    }
+
+    /* Cutout die-cut sticker layer that pops out with ultra-smooth spring */
+    .cutout-sticker {
+      position: absolute;
+      inset: -30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transform: scale(0.7) translateY(20px);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out;
+      z-index: 3;
+    }
+
+    /* Hover & Active trigger states */
+    .sticker-container:hover .circle-portrait,
+    .sticker-container.is-active .circle-portrait {
+      transform: scale(0.8) translateY(10px);
+      opacity: 0;
+    }
+
+    .sticker-container:hover .cutout-sticker,
+    .sticker-container.is-active .cutout-sticker {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Smooth Pop-In Spring for Badges */
+    .badge-item {
+      transform: scale(0) translate(0, 0) rotate(0deg);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out;
+    }
+
+    .sticker-container:hover .badge-item,
+    .sticker-container.is-active .badge-item {
+      opacity: 1;
+      transform: scale(1) translate(0, 0);
+    }
+  </style>
+</head>
+
+<body class="bg-[#F2F2F7] dark:bg-[#000000] text-slate-900 dark:text-zinc-100 min-h-screen transition-colors duration-300 antialiased selection:bg-[#1877F2] selection:text-white relative overflow-x-hidden">
+
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/15 dark:bg-blue-600/10 rounded-full blur-3xl animate-blob-1"></div>
+    <div class="absolute top-1/3 -right-40 w-[30rem] h-[30rem] bg-indigo-500/10 dark:bg-purple-600/10 rounded-full blur-3xl animate-blob-2"></div>
+    <div class="absolute -bottom-40 left-1/4 w-96 h-96 bg-sky-400/10 dark:bg-cyan-500/10 rounded-full blur-3xl animate-blob-1"></div>
+  </div>
+
+  <header class="fixed top-4 inset-x-0 z-50 flex items-center justify-between px-4 sm:px-8 pointer-events-none max-w-7xl mx-auto">
+    <div class="pointer-events-auto flex items-center h-12 px-5 rounded-full ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/[0.08] dark:border-white/[0.12] shadow-md">
+      <a href="#hero" class="font-display font-bold text-sm sm:text-base tracking-tight flex items-center gap-1.5">
+        <span class="text-slate-900 dark:text-white font-semibold">ADRIAN</span> <span class="text-[#1877F2] font-semibold">CALINGASIN</span>
+      </a>
+    </div>
+
+    <nav class="pointer-events-auto hidden lg:flex items-center gap-1.5 h-12 px-6 rounded-full ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/[0.08] dark:border-white/[0.12] shadow-xl text-sm font-normal transition-all duration-300">
+      <a href="#hero" class="px-3.5 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Home</a>
+      <a href="#about" class="px-3.5 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">About</a>
+      <a href="#experience" class="px-3.5 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Timeline</a>
+      <a href="#projects" class="px-3.5 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Projects</a>
+      <a href="#tools" class="px-3.5 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Stack</a>
+      <a href="#pubmats" class="px-3.5 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Pubmats</a>
+      <a href="#multimedia" class="px-3.5 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Videos</a>
+      <a href="#gallery" class="px-3.5 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Gallery</a>
+      <a href="#contact" class="px-3.5 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Contact</a>
+    </nav>
+
+    <div class="pointer-events-auto flex items-center gap-2">
+      <button id="themeToggleBtn" aria-label="Toggle Theme" class="w-12 h-12 flex items-center justify-center rounded-full ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/[0.08] dark:border-white/[0.12] shadow-md text-slate-700 dark:text-amber-300 hover:scale-105 active:scale-95 transition-transform">
+        <svg class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" stroke-width="2"/><path stroke-linecap="round" stroke-width="2" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="w-4 h-4 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+      </button>
+
+      <button onclick="toggleMobileMenu()" aria-label="Open Menu" class="w-12 h-12 flex items-center justify-center rounded-full lg:hidden ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/[0.08] dark:border-white/[0.12] shadow-md text-slate-800 dark:text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="mobileMenuOverlay" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300" onclick="toggleMobileMenu()">
+    <div id="mobileMenuDrawer" class="absolute top-0 right-0 bottom-0 w-72 bg-white dark:bg-[#1c1c1e] p-6 shadow-2xl flex flex-col justify-between transform translate-x-full transition-transform duration-300" onclick="event.stopPropagation()">
+      <div class="space-y-6">
+        <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-4">
+          <span class="font-display font-semibold text-sm tracking-tight flex items-center gap-1.5">
+            <span class="text-slate-900 dark:text-white font-semibold">ADRIAN</span> <span class="text-[#1877F2] font-semibold">CALINGASIN</span>
+          </span>
+          <button onclick="toggleMobileMenu()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-black/10 dark:border-white/20 shadow-md">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="flex flex-col space-y-1 font-normal text-sm">
+          <a href="#hero" onclick="toggleMobileMenu()" class="px-4 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Home</a>
+          <a href="#about" onclick="toggleMobileMenu()" class="px-4 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">About</a>
+          <a href="#experience" onclick="toggleMobileMenu()" class="px-4 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Timeline</a>
+          <a href="#projects" onclick="toggleMobileMenu()" class="px-4 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Projects</a>
+          <a href="#tools" onclick="toggleMobileMenu()" class="px-4 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Stack</a>
+          <a href="#pubmats" onclick="toggleMobileMenu()" class="px-4 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Pubmats</a>
+          <a href="#multimedia" onclick="toggleMobileMenu()" class="px-4 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Videos</a>
+          <a href="#gallery" onclick="toggleMobileMenu()" class="px-4 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Gallery</a>
+          <a href="#contact" onclick="toggleMobileMenu()" class="px-4 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-normal">Contact</a>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <main class="relative z-10 pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 sm:space-y-32">
+    
+    <section id="hero" class="pt-6 sm:pt-12 pb-4">
+      <div class="flex flex-col-reverse lg:flex-row items-center justify-between gap-10 lg:gap-14">
+        
+        <div class="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left">
+          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight pb-3 mb-3 bg-gradient-to-b from-slate-950 via-slate-800 to-slate-600 dark:from-white dark:via-zinc-200 dark:to-zinc-500 bg-clip-text text-transparent leading-[1.2]">
+            Adrian Calingasin
+          </h1>
+          
+          <p class="text-base sm:text-xl text-slate-600 dark:text-zinc-400 max-w-2xl font-normal leading-relaxed mb-8">
+            Developer <span class="text-blue-500">•</span> Project Manager <span class="text-blue-500">•</span> Designer
+          </p>
+
+          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-8">
+            <a href="#projects" class="px-6 py-3 rounded-full text-sm font-semibold bg-[#1877F2] hover:bg-blue-600 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+              Explore Projects
+            </a>
+            <a href="CV.pdf" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-full text-sm font-semibold bg-blue-500/10 hover:bg-blue-500/20 text-[#1877F2] dark:text-blue-400 border border-blue-500/30 shadow-sm transition-all duration-200 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span>View CV</span>
+            </a>
+            <a href="#experience" class="px-6 py-3 rounded-full text-sm font-semibold bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/15 text-slate-800 dark:text-white border border-black/[0.08] dark:border-white/[0.15] shadow-sm transition-all duration-200">
+              View Experience
+            </a>
+          </div>
+
+          <div class="flex items-center justify-center lg:justify-start gap-3 sm:gap-4">
+            <a href="https://www.linkedin.com/in/adrian-calingasin-278350222/" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-full ios-glass bg-white/80 dark:bg-zinc-800/80 border border-black/5 dark:border-white/10 text-slate-700 dark:text-zinc-200 hover:text-[#0077B5] hover:scale-110 transition-all" title="LinkedIn">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.2a1.64 1.64 0 0 0-1.64 1.63c0 .91.73 1.64 1.64 1.64s1.63-.73 1.63-1.64c0-.9-.72-1.63-1.63-1.63Z"/></svg>
+            </a>
+            <a href="https://github.com/adrian-cali" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-full ios-glass bg-white/80 dark:bg-zinc-800/80 border border-black/5 dark:border-white/10 text-slate-700 dark:text-zinc-200 hover:text-black dark:hover:text-white hover:scale-110 transition-all" title="GitHub">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z"/></svg>
+            </a>
+            <a href="https://www.instagram.com/adriaaaansc/" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-full ios-glass bg-white/80 dark:bg-zinc-800/80 border border-black/5 dark:border-white/10 text-slate-700 dark:text-zinc-200 hover:text-pink-600 hover:scale-110 transition-all" title="Instagram">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="https://www.tiktok.com/@adriaaaansc" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-full ios-glass bg-white/80 dark:bg-zinc-800/80 border border-black/5 dark:border-white/10 text-slate-700 dark:text-zinc-200 hover:text-black dark:hover:text-white hover:scale-110 transition-all" title="TikTok">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-1.01-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+            </a>
+            <a href="mailto:adrian.calingasin.work@gmail.com" class="p-2.5 rounded-full ios-glass bg-white/80 dark:bg-zinc-800/80 border border-black/5 dark:border-white/10 text-slate-700 dark:text-zinc-200 hover:text-red-500 hover:scale-110 transition-all" title="Email Adrian">
+              <svg class="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2" stroke-width="2"/><path stroke-width="2" d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="flex-shrink-0 relative group">
+          <div class="absolute -inset-2 sm:-inset-4 rounded-3xl bg-gradient-to-tr from-blue-600/30 via-indigo-500/25 to-sky-400/30 blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-80"></div>
+          
+          <div class="relative w-64 sm:w-80 md:w-96 rounded-3xl p-2.5 sm:p-3.5 ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/[0.08] dark:border-white/[0.15] shadow-2xl">
+            <div class="relative rounded-2xl overflow-hidden bg-slate-200 dark:bg-zinc-800 aspect-[4/5] sm:aspect-[3/4]">
+              <img 
+                src="assets/hero-sitting.png" 
+                alt="Adrian Calingasin" 
+                class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+            <div class="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 px-3.5 py-1.5 rounded-2xl ios-glass bg-white/90 dark:bg-zinc-900/90 border border-black/10 dark:border-white/15 shadow-lg flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span class="text-[11px] sm:text-xs font-semibold text-slate-800 dark:text-zinc-200">Manila, PH 🇵🇭</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="about" class="scroll-mt-24">
+      <div class="rounded-3xl ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] p-6 sm:p-10 shadow-lg">
+        <div class="flex flex-col md:flex-row items-center gap-8 md:gap-14">
+          
+          <!-- Interactive Pop-Out Sticker Avatar Section with Smooth Spring Hover Transition -->
+          <div class="relative flex-shrink-0 flex items-center justify-center p-4">
+            <div class="sticker-container group/avatar cursor-pointer select-none" onclick="this.classList.toggle('is-active')">
+              
+              <div class="absolute -inset-3 rounded-full bg-gradient-to-tr from-blue-500/20 via-sky-400/20 to-indigo-500/20 blur-xl opacity-60 group-hover/avatar:opacity-95 transition-opacity duration-300"></div>
+
+              <!-- 1. Default Circle Portrait -->
+              <div class="circle-portrait">
+                <img 
+                  src="assets/about-me-picture.png" 
+                  alt="Adrian Calingasin" 
+                  class="w-full h-full object-cover object-top scale-110 translate-y-3"
+                />
+              </div>
+
+              <!-- 2. Cutout Die-cut Sticker with Pop-out Effect & Badges -->
+              <div class="cutout-sticker">
+                <div class="relative w-full h-full flex items-center justify-center">
+                  
+                  <img 
+                    src="assets/about-me-picture.png" 
+                    alt="Adrian Calingasin Cutout Sticker" 
+                    class="w-full h-full object-contain filter-sticker"
+                  />
+
+                  <!-- Left Shoulder: UwU Bubble -->
+                  <div class="absolute top-30 left-6 sm:left-6 badge-item pointer-events-auto" style="transition-delay: 0.03s;">
+                    <div class="relative w-24 sm:w-24 h-24 sm:h-24 flex items-center justify-center overflow-hidden drop-shadow-xl">
+                      <img src="assets/emoji/uwu.png" alt="UwU" class="w-full h-full object-contain"/>
+                    </div>
+                  </div>
+
+                  <!-- Upper Right Neck: "send food." Blue Speech Bubble -->
+                  <div class="absolute top-16 right-2 sm:right-9 badge-item pointer-events-auto" style="transition-delay: 0.06s;">
+                    <div class="relative h-24 sm:h-24 flex items-center justify-center overflow-hidden drop-shadow-xl">
+                      <img src="assets/emoji/send-food.png" alt="send food." class="h-full object-contain"/>
+                    </div>
+                  </div>
+
+                  <!-- Bottom-Left: Heart Notification Badge -->
+                  <div class="absolute bottom-0 left-5 sm:left-4badge-item pointer-events-auto" style="transition-delay: 0.09s;">
+                    <div class="w-20 h-20 sm:w-20 sm:h-20 overflow-hidden flex items-center justify-center drop-shadow-xl">
+                      <img src="assets/emoji/heart-emoji.png" alt="Heart Emoji" class="w-full h-full object-contain"/>
+                    </div>
+                  </div>
+
+                  <!-- Bottom-Right: Smile Emoji -->
+                  <div class="absolute bottom-6 right-2 sm:right-4 badge-item pointer-events-auto" style="transition-delay: 0.12s;">
+                    <div class="w-20 h-20 sm:w-20 sm:h-20 overflow-hidden flex items-center justify-center drop-shadow-xl">
+                      <img src="assets/emoji/smile-emoji.png" alt="Smile Emoji" class="w-full h-full object-contain"/>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="flex-1 text-center md:text-left space-y-4">
+            <div class="inline-block px-3 py-1 rounded-full text-xs font-semibold text-[#1877F2] dark:text-blue-400 bg-blue-500/10">
+              Meet Adrian
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Adrian Calingasin
+            </h2>
+            <p class="text-base sm:text-lg text-slate-600 dark:text-zinc-300 leading-relaxed">
+              Hello! I’m Adrian, a Computer Engineering graduate who enjoys making technology do cool things. From coding and designing to exploring new ideas, I’m all about learning, building, and occasionally wondering why the code refuses to cooperate.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience" class="scroll-mt-24 space-y-8">
+      <div>
+        <span class="text-[#1877F2] dark:text-blue-400 font-bold uppercase tracking-widest text-xs sm:text-sm">TRACK RECORD</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-slate-900 dark:text-white mt-1">
+          My Experiences & Contributions
+        </h2>
+        <p class="text-slate-600 dark:text-zinc-400 text-sm sm:text-base mt-1">
+          Professional career milestones, educational history, and student organization leadership timelines.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        
+        <div class="space-y-8">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Work</span>
+              <div class="h-px flex-1 bg-slate-200 dark:bg-zinc-800"></div>
+            </div>
+
+            <div onclick="openWorkModal()" class="cursor-pointer rounded-2xl p-5 ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] hover:border-[#1877F2] dark:hover:border-blue-500 hover:shadow-lg transition-all duration-200 group">
+              <div class="flex items-start gap-4">
+                <img 
+                  src="assets/logos/logo-spm.png" 
+                  data-light-src="assets/logos/logo-spm.png"
+                  data-dark-src="assets/logos/logo-spm-dark.png"
+                  alt="SPM Logo" 
+                  class="w-12 h-12 rounded-xl object-contain bg-white dark:bg-zinc-800 p-1 border border-black/5 dark:border-white/10 flex-shrink-0 spm-logo-img"
+                />
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <h4 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white group-hover:text-[#1877F2] transition-colors">
+                      Backend Developer Intern
+                    </h4>
+                    <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/10 text-[#1877F2] dark:text-blue-400 font-semibold">
+                      2026 • 240 hrs
+                    </span>
+                  </div>
+                  <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-300 font-medium mt-0.5">
+                    S.P. Madrid & Associates Law Firm
+                  </p>
+                  <p class="text-xs text-slate-500 dark:text-zinc-400 mt-2 line-clamp-2">
+                    FastAPI backend microservices, Casbin authorization, MinIO object storage, VROOM/OSRM vehicle routing, and OpenCI ver.2 data analytics.
+                  </p>
+                  <div class="mt-3 text-xs font-semibold text-[#1877F2] dark:text-blue-400 flex items-center gap-1">
+                    Tap to view contributions & tech 
+                    <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Education</span>
+              <div class="h-px flex-1 bg-slate-200 dark:bg-zinc-800"></div>
+            </div>
+
+            <div class="space-y-3">
+              <div onclick="openEduModal('college')" class="cursor-pointer rounded-2xl p-4 sm:p-5 ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] hover:border-[#1877F2] dark:hover:border-blue-500 hover:shadow-md transition-all group">
+                <div class="flex items-start gap-4">
+                  <img src="assets/logos/logo-plm.png" alt="PLM Logo" class="w-12 h-12 rounded-xl object-contain bg-white dark:bg-zinc-800 p-1 border flex-shrink-0" onerror="this.src='https://placehold.co/100x100/1877F2/ffffff?text=PLM'"/>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                      <span class="text-xs font-bold uppercase tracking-wider text-[#1877F2] dark:text-blue-400">Undergraduate</span>
+                      <span class="text-xs text-slate-500 dark:text-zinc-400 font-medium">2022 – 2026</span>
+                    </div>
+                    <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white mt-0.5">Bachelor of Science in Computer Engineering</h4>
+                    <p class="text-xs text-slate-600 dark:text-zinc-300">Pamantasan ng Lungsod ng Maynila</p>
+                    <div class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-400/20 text-slate-700 dark:text-slate-300 border border-slate-400/30">
+                      ★ MAGNA CUM LAUDE
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div onclick="openEduModal('shs')" class="cursor-pointer rounded-2xl p-4 sm:p-5 ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] hover:border-[#1877F2] dark:hover:border-blue-500 hover:shadow-md transition-all group">
+                <div class="flex items-start gap-4">
+                  <img src="assets/logos/logo-dominican.png" alt="Dominican Logo" class="w-12 h-12 rounded-xl object-contain bg-white dark:bg-zinc-800 p-1 border flex-shrink-0" onerror="this.src='https://placehold.co/100x100/1877F2/ffffff?text=DSM'"/>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                      <span class="text-xs font-bold uppercase tracking-wider text-[#1877F2] dark:text-blue-400">Senior High School</span>
+                      <span class="text-xs text-slate-500 dark:text-zinc-400 font-medium">2020 – 2022</span>
+                    </div>
+                    <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white mt-0.5">STEM Strand (Science, Technology, Engineering, & Mathematics)</h4>
+                    <p class="text-xs text-slate-600 dark:text-zinc-300">Dominican School Manila</p>
+                    <div class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-500 dark:text-amber-400 border border-amber-500/30">
+                      ★ WITH HIGHEST HONORS
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div onclick="openEduModal('jhs')" class="cursor-pointer rounded-2xl p-4 sm:p-5 ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] hover:border-[#1877F2] dark:hover:border-blue-500 hover:shadow-md transition-all group">
+                <div class="flex items-start gap-4">
+                  <img src="assets/logos/logo-dominican.png" alt="Dominican Logo" class="w-12 h-12 rounded-xl object-contain bg-white dark:bg-zinc-800 p-1 border flex-shrink-0" onerror="this.src='https://placehold.co/100x100/1877F2/ffffff?text=DSM'"/>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                      <span class="text-xs font-bold uppercase tracking-wider text-[#1877F2] dark:text-blue-400">Junior High School</span>
+                      <span class="text-xs text-slate-500 dark:text-zinc-400 font-medium">2016 – 2020</span>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-zinc-300 mt-1">Dominican School Manila</p>
+                    <div class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-400/20 text-slate-700 dark:text-slate-300 border border-slate-400/30">
+                      ★ WITH HIGH HONORS
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Activities & Leadership</span>
+            <div class="h-px flex-1 bg-slate-200 dark:bg-zinc-800"></div>
+          </div>
+          <div class="space-y-3" id="leadershipAccordionContainer">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="projects" class="scroll-mt-24 space-y-8">
+      <div>
+        <span class="text-[#1877F2] dark:text-blue-400 font-bold uppercase tracking-widest text-xs sm:text-sm">SHOWCASE</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-slate-900 dark:text-white mt-1">
+          Featured Engineering Projects
+        </h2>
+        <p class="text-slate-600 dark:text-zinc-400 text-sm sm:text-base mt-1">
+          Software architectures, embedded IoT devices, intelligent robotics, and terminal OS kernels.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projectsContainer">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <section id="tools" class="scroll-mt-24 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-[#1877F2] dark:text-blue-400 font-bold uppercase tracking-widest text-xs sm:text-sm">STACK</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-slate-900 dark:text-white mt-1">
+            Technologies
+          </h2>
+          <p class="text-slate-600 dark:text-zinc-400 text-sm sm:text-base mt-1">
+            Core programming languages and markup. Click "+ more" to explore the complete technical stack.
+          </p>
+        </div>
+        <button onclick="openTechModal()" class="inline-flex items-center gap-1.5 text-sm font-bold text-[#1877F2] dark:text-blue-400 hover:underline self-start sm:self-auto">
+          <span>VIEW ALL →</span>
+        </button>
+      </div>
+
+      <div class="flex flex-wrap gap-2.5 pt-2">
+        <span class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/10 dark:border-white/15 shadow-sm text-slate-800 dark:text-zinc-200">Python</span>
+        <span class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/10 dark:border-white/15 shadow-sm text-slate-800 dark:text-zinc-200">C</span>
+        <span class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/10 dark:border-white/15 shadow-sm text-slate-800 dark:text-zinc-200">C++</span>
+        <span class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/10 dark:border-white/15 shadow-sm text-slate-800 dark:text-zinc-200">Java</span>
+        <span class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/10 dark:border-white/15 shadow-sm text-slate-800 dark:text-zinc-200">JavaScript</span>
+        <span class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/10 dark:border-white/15 shadow-sm text-slate-800 dark:text-zinc-200">PHP</span>
+        <span class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/10 dark:border-white/15 shadow-sm text-slate-800 dark:text-zinc-200">SQL</span>
+        <span class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/10 dark:border-white/15 shadow-sm text-slate-800 dark:text-zinc-200">HTML</span>
+        <span class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium ios-glass bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/10 dark:border-white/15 shadow-sm text-slate-800 dark:text-zinc-200">CSS</span>
+        <button onclick="openTechModal()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-blue-500/10 text-[#1877F2] dark:text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition-all">
+          + more
+        </button>
+      </div>
+    </section>
+
+    <section id="pubmats" class="scroll-mt-24 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-[#1877F2] dark:text-blue-400 font-bold uppercase tracking-widest text-xs sm:text-sm">CREATIVE GRAPHICS</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-slate-900 dark:text-white mt-1">
+            Pubmats & Visual Design
+          </h2>
+          <p class="text-slate-600 dark:text-zinc-400 text-sm sm:text-base mt-1">
+            Visual identity, brand assets, social media campaigns, and official student publications.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-1.5 self-start sm:self-auto">
+          <button onclick="scrollPubmats(-1)" class="p-2 rounded-full ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-transform" aria-label="Previous Pubmats">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button onclick="scrollPubmats(1)" class="p-2 rounded-full ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-transform" aria-label="Next Pubmats">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-rows-2 grid-flow-col auto-cols-[120px] sm:auto-cols-[150px] md:auto-cols-[175px] gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-2 px-1 scroll-smooth" id="pubmatsGrid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="w-full max-w-xs mx-auto flex items-center gap-3 pt-1">
+        <div class="flex-1 h-1.5 rounded-full bg-black/10 dark:bg-white/15 overflow-hidden">
+          <div id="pubmatsProgressBar" class="h-full bg-[#1877F2] rounded-full transition-all duration-150 ease-out" style="width: 15%;"></div>
+        </div>
+        <span id="pubmatsProgressLabel" class="text-[11px] font-semibold text-slate-500 dark:text-zinc-400 tabular-nums">0%</span>
+      </div>
+    </section>
+
+    <section id="multimedia" class="scroll-mt-24 space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-[#1877F2] dark:text-blue-400 font-bold uppercase tracking-widest text-xs sm:text-sm">MULTIMEDIA & CINEMATICS</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-slate-900 dark:text-white mt-1">
+            Featured Video Productions
+          </h2>
+          <p class="text-slate-600 dark:text-zinc-400 text-sm sm:text-base mt-1">
+            Trailers, infomercials, same-day-edits, and official council launch videos.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="scrollVideoCarousel(-1)" class="p-2 rounded-full ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-transform" aria-label="Previous Videos">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button onclick="scrollVideoCarousel(1)" class="p-2 rounded-full ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-transform" aria-label="Next Videos">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-4 px-1 scroll-smooth" id="videoCarousel">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="w-full max-w-xs mx-auto flex items-center gap-3 pt-1">
+        <div class="flex-1 h-1.5 rounded-full bg-black/10 dark:bg-white/15 overflow-hidden">
+          <div id="videosProgressBar" class="h-full bg-[#1877F2] rounded-full transition-all duration-150 ease-out" style="width: 20%;"></div>
+        </div>
+        <span id="videosProgressLabel" class="text-[11px] font-semibold text-slate-500 dark:text-zinc-400 tabular-nums">0%</span>
+      </div>
+    </section>
+
+    <section id="gallery" class="scroll-mt-24 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-[#1877F2] dark:text-blue-400 font-bold uppercase tracking-widest text-xs sm:text-sm">PERSONAL MOMENTS</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-slate-900 dark:text-white mt-1">
+            Photo Gallery
+          </h2>
+          <p class="text-slate-600 dark:text-zinc-400 text-sm sm:text-base mt-1">
+            Outside the developer
+          </p>
+        </div>
+        <button onclick="openGalleryModal()" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-bold text-[#1877F2] dark:text-blue-400 hover:underline self-start sm:self-auto">
+          <span>SEE MORE (40) →</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-3.5" id="galleryPreviewGrid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <section id="contact" class="scroll-mt-24">
+      <div class="rounded-3xl ios-glass bg-gradient-to-b from-white/90 to-white/60 dark:from-[#1C1C1E]/90 dark:to-[#1C1C1E]/60 border border-black/5 dark:border-white/10 p-8 sm:p-14 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-2xl mx-auto text-center space-y-6">
+          <span class="text-xs font-bold tracking-widest text-[#1877F2] uppercase">Let's Connect</span>
+          <h2 class="font-display text-4xl sm:text-5xl font-black uppercase text-zinc-900 dark:text-white tracking-tight">
+            Get In Touch
+          </h2>
+          <p class="text-base sm:text-lg text-zinc-600 dark:text-zinc-300 font-normal">
+            Whether you want to talk about backend architectures, IoT sensors, creative direction, or have an exciting engineering role in mind — my inbox is always open.
+          </p>
+
+          <div class="pt-4 flex flex-wrap items-center justify-center gap-4">
+            <a href="mailto:adrian.calingasin.work@gmail.com" class="px-8 py-4 rounded-full bg-[#1877F2] hover:bg-[#1664d9] text-white font-bold text-sm shadow-xl shadow-[#1877F2]/25 hover:shadow-2xl hover:shadow-[#1877F2]/40 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <span>adrian.calingasin.work@gmail.com</span>
+            </a>
+            <a href="https://www.linkedin.com/in/adrian-calingasin-278350222/" target="_blank" rel="noopener noreferrer" class="px-8 py-4 rounded-full ios-glass bg-white dark:bg-zinc-800 border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-800 dark:text-white font-bold text-sm shadow-sm transition-all transform hover:-translate-y-0.5">
+              Connect on LinkedIn
+            </a>
+          </div>
+
+          <div class="pt-6 flex items-center justify-center gap-2 text-[10px] sm:text-xs font-semibold text-zinc-500">
+            <span class="w-2 h-2 flex-shrink-0 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Based in Manila, Philippines (GMT+8) • <span id="manilaClock" class="whitespace-nowrap">--:-- --</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="relative z-10 border-t border-black/[0.08] dark:border-white/[0.08] bg-white/50 dark:bg-[#0a0a0c]/50 ios-glass py-12 px-4 sm:px-6 lg:px-8 mt-20">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      
+      <div class="text-center sm:text-left space-y-1">
+        <p class="font-bold text-slate-900 dark:text-white text-base">Adrian Calingasin</p>
+        <p class="text-xs text-slate-500 dark:text-zinc-400">Developer • Project Manager • Designer</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="https://www.linkedin.com/in/adrian-calingasin-278350222/" target="_blank" rel="noopener noreferrer" class="p-2 rounded-full ios-glass bg-black/5 dark:bg-white/10 hover:text-[#0077B5] transition-colors" title="LinkedIn">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.2a1.64 1.64 0 0 0-1.64 1.63c0 .91.73 1.64 1.64 1.64s1.63-.73 1.63-1.64c0-.9-.72-1.63-1.63-1.63Z"/></svg>
+        </a>
+        <a href="https://github.com/adrian-cali" target="_blank" rel="noopener noreferrer" class="p-2 rounded-full ios-glass bg-black/5 dark:bg-white/10 hover:text-black dark:hover:text-white transition-colors" title="GitHub">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/adriaaaansc/" target="_blank" rel="noopener noreferrer" class="p-2 rounded-full ios-glass bg-black/5 dark:bg-white/10 hover:text-pink-600 transition-colors" title="Instagram">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@adriaaaansc" target="_blank" rel="noopener noreferrer" class="p-2 rounded-full ios-glass bg-black/5 dark:bg-white/10 hover:text-black dark:hover:text-white transition-colors" title="TikTok">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-1.01-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+        </a>
+        <a href="mailto:adrian.calingasin.work@gmail.com" class="p-2 rounded-full ios-glass bg-black/5 dark:bg-white/10 hover:text-red-500 transition-colors" title="Email Adrian">
+          <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2" stroke-width="2"/><path stroke-width="2" d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        </a>
+      </div>
+
+      <div>
+        <a href="#hero" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold ios-glass bg-black/5 dark:bg-white/10 hover:bg-[#1877F2] hover:text-white transition-all">
+          <span>Back to Top</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </footer>
+
+  <div id="generalModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div onclick="closeModal()" class="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md"></div>
+    <div class="relative w-full max-w-xl">
+      <button onclick="closeModal()" class="absolute -top-4 -right-2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-black/10 dark:border-white/20 shadow-md hover:scale-105 transition-transform" aria-label="Close modal">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <div id="modalDialog" class="relative w-full max-h-[85vh] overflow-y-auto rounded-3xl ios-glass bg-white/95 dark:bg-[#1c1c1e]/95 border border-black/10 dark:border-white/15 shadow-2xl p-6 sm:p-8 transform scale-95 transition-transform duration-300">
+        <div id="modalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="imageLightboxModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300 bg-black/85 backdrop-blur-xl">
+    <div onclick="closeLightbox()" class="absolute inset-0"></div>
+    
+    <button onclick="closeLightbox()" class="absolute top-6 right-6 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-slate-900 dark:text-white border border-black/10 dark:border-white/20 shadow-2xl hover:scale-105 active:scale-95 transition-all" aria-label="Close lightbox">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+
+    <button onclick="lightboxNavigate(-1)" class="absolute left-4 sm:left-8 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-slate-900 dark:text-white border border-black/10 dark:border-white/20 shadow-2xl hover:scale-105 active:scale-95 transition-all" aria-label="Previous Image">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+    </button>
+
+    <button onclick="lightboxNavigate(1)" class="absolute right-4 sm:right-8 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-slate-900 dark:text-white border border-black/10 dark:border-white/20 shadow-2xl hover:scale-105 active:scale-95 transition-all" aria-label="Next Image">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+    </button>
+
+    <div class="relative z-20 max-w-[96vw] max-h-[96vh] flex items-center justify-center overflow-hidden">
+      <img id="lightboxImage" src="" alt="Lightbox View" draggable="false" class="max-w-[94vw] max-h-[94vh] w-auto h-auto object-contain rounded-2xl shadow-2xl select-none touch-pan-y" />
+    </div>
+  </div>
+
+  <script>
+    const PROJECTS = [
+      {
+        id: "vrp",
+        title: "Vehicle Routing Plan",
+        subtitle: "Geospatial Field Service Route Optimizer",
+        github: "https://github.com/adrian-cali/vehicle-routing-plan/tree/main",
+        image: "assets/projects/project-vrp.png",
+        tags: ["FastAPI", "PostgreSQL", "Uber H3", "OSRM", "VROOM", "Celery", "Redis"],
+        description: "An automated dispatch and routing system designed to assign tasks to field workers and generate optimized paths based on real-time geospatial coordinates.",
+        longDescription: "The Vehicle Routing Plan is an automated dispatch and route-planning architecture. It utilizes FastAPI for asynchronous service endpoints, PostgreSQL for storage, and Uber H3 hexagonal spatial indexing combined with OSRM and VROOM for road-distance matrix calculation and TSP/VRP optimization.",
+        highlights: ["Asynchronous task routing with Celery & Redis queues", "Hexagonal spatial resolution & grouping via Uber H3", "Road distance matrices calculated through OSRM", "Multi-vehicle capacity & window optimization powered by VROOM"]
+      },
+      {
+        id: "agos",
+        title: "AGOS",
+        subtitle: "Automated Greywater Operational System",
+        github: "https://github.com/adrian-cali/agos",
+        image: "assets/projects/project-agos.png",
+        tags: ["ESP32", "Flutter", "FastAPI", "WebSockets", "IoT Sensors"],
+        description: "Cross-platform mobile application monitoring and managing a multi-stage greywater recycling system in real-time.",
+        longDescription: "AGOS pairs ESP32 microcontrollers with a cross-platform Flutter application using a Python FastAPI WebSocket bridge. It delivers real-time water quality telemetry including turbidity, pH, Total Dissolved Solids (TDS), and water tank levels.",
+        highlights: ["Real-time dual-duplex sensor streaming over WebSockets", "Automated threshold alert system for hazardous contaminants", "Offline-first sync and historical sensor readings database", "Dual Wi-Fi and Bluetooth Low Energy (BLE) hardware connectivity"]
+      },
+      {
+        id: "dns-catering",
+        title: "DN's Catering Service",
+        subtitle: "Commercial Event Management & Quotation Engine",
+        github: "https://github.com/adrian-cali/dns-catering-service",
+        image: "assets/projects/project-catering.png",
+        tags: ["PHP", "MySQL", "JavaScript", "Admin Dashboard"],
+        description: "Full-stack web application for DN's Kreative Events & Party Needs in Manila with customer packages and admin back-office.",
+        longDescription: "A production PHP & MySQL web application for a Manila event management business. Features a customer-facing portal to explore catering packages, submit bespoke quotation requests, and leave verified reviews.",
+        highlights: ["Customer quotation builder with real-time fee calculation", "Password-secured administrative back-office with analytical reporting", "Sanitized input pipelines preventing SQLi and CSRF vulnerabilities", "Responsive client catalog with menu and event package filters"]
+      },
+      {
+        id: "bibot",
+        title: "BiBot: Filipino Speaking AI Robot",
+        subtitle: "Interactive Cultural Voice Companion",
+        github: "https://github.com/adrian-cali/BiBot_Talking_Bot",
+        image: "assets/projects/project-bibot.png",
+        tags: ["Gemini AI", "SpeechRecognition", "gTTS", "Servos", "Python"],
+        description: "Interactive AI-powered educational robot that speaks Filipino, teaches heritage and history, and articulates motorized servos.",
+        longDescription: "BiBot is an educational AI robot created to teach Filipino culture, folklore, and history to children. Built with Google Gemini AI for contextual conversational intelligence, Google Speech Recognition for speech-to-text, and gTTS for speech synthesis.",
+        highlights: ["Conversational prompts fine-tuned for child-friendly Filipino dialogue", "Dynamic servo motor gesture synchronization matched to audio length", "Microphone noise cancellation and speech recognition pipeline", "Cultural educational knowledge graph powered by Google Gemini"]
+      },
+      {
+        id: "gastos",
+        title: "GASTOS",
+        subtitle: "Guided Access Simple Terminal OS",
+        github: "https://github.com/adrian-cali/GASTOS",
+        image: "assets/projects/project-gastos.png",
+        tags: ["C#", ".NET", "Cosmos Dev Kit", "Monolithic Kernel"],
+        description: "Customized terminal-based operating system with guided CLI commands, audio feedback, and built-in system games.",
+        longDescription: "GASTOS is a bare-metal terminal operating system constructed in C# with the .NET Cosmos (C# Open Source Managed Operating System) developer kit. Implemented with a modular monolithic architecture.",
+        highlights: ["Bare-metal hardware boot sequence with direct memory management", "Integrated PC speaker tone synthesizers for audio feedback cues", "File system operations, session administration, and diagnostics", "Built-in retro interactive arcade games executing directly in terminal space"]
+      },
+      {
+        id: "boombastick",
+        title: "BoomBaStick",
+        subtitle: "Motion-Sensing Electronic Drumstick",
+        github: "https://github.com/adrian-cali/boombastick",
+        image: "assets/projects/project-boombastick.png",
+        tags: ["Python", "Adafruit BNO055 IMU", "Serial Comm", "Audio DSP"],
+        description: "Smart motion-controlled drumstick translating spatial swings and angles into low-latency digital percussion samples.",
+        longDescription: "BoomBaStick converts physical gestures into digital percussion in real-time. An Adafruit BNO055 9-DOF Absolute Orientation IMU sensor samples acceleration and orientation vectors over high-speed UART serial.",
+        highlights: ["9-DOF Absolute orientation tracking via sensor fusion algorithms", "Dynamic velocity calculation mapping swing speed to audio decibels", "Spatial zone detection allocating multiple drum kit pieces to space", "Optimized sub-20ms audio latency for real-time live performance"]
+      },
+      {
+        id: "sentiment",
+        title: "Market Sentiment Analysis",
+        subtitle: "NLP Stock Market Sentiment Engine",
+        github: "https://github.com/adrian-cali/market-sentiment-analysis",
+        image: "assets/projects/project-marketsentiment.png",
+        tags: ["Streamlit", "Python", "VADER", "Logistic Regression", "Pandas"],
+        description: "Dual-model natural language processing web app comparing rule-based VADER lexicon and trained Logistic Regression models on financial text.",
+        longDescription: "A Streamlit web application providing comparative NLP market sentiment analysis on uploaded financial CSVs (stock discussions, tweets, and earnings reports). Combines rule-based VADER lexicon evaluation with a supervised Logistic Regression classifier.",
+        highlights: ["Dual analysis: Rule-based VADER vs Supervised Machine Learning", "Interactive time-series charts visualizing bullish/bearish swings", "Instant batch processing of unstructured financial market corpora", "Exportable scored datasets with confidence ratings"]
+      },
+      {
+        id: "chr-network",
+        title: "CHR Network & Security Plan",
+        subtitle: "Enterprise Topology & Security Architecture",
+        github: "https://github.com/adrian-cali/CHR-Network-Plan",
+        image: "assets/projects/project-network.png",
+        tags: ["Cisco Packet Tracer", "Network Security", "VLANs", "Firewall"],
+        description: "Enterprise network architecture featuring multi-subnet physical layouts, VLAN segmentation, and Cisco Packet Tracer simulation.",
+        longDescription: "A network infrastructure and cybersecurity blueprint comprising exhaustive technical documentation, multi-floor architectural floorplans, and an operational Cisco Packet Tracer simulation.",
+        highlights: ["Complete multi-floor physical rack layout and wiring diagrams", "Configured VLAN partitioning isolating corporate, guest, and server subnets", "Strict firewall rules, ACL traffic filters, and port security protocols", "Simulated Packet Tracer stress-testing validating throughput and redundancy"]
+      },
+      {
+        id: "aquarium",
+        title: "Digital Aquarium",
+        subtitle: "Autonomous Virtual Ecosystem",
+        github: "https://github.com/adrian-cali/digital-aquarium",
+        image: "assets/projects/project-aquarium.png",
+        tags: ["HTML5 Canvas", "JavaScript", "LocalStorage", "Physics"],
+        description: "Ambient browser ecosystem with autonomous aquatic life, procedural flocking physics, day/night lighting, and local persistence.",
+        longDescription: "A virtual aquarium crafted with pure HTML5 Canvas and vanilla JavaScript. Features autonomous fish with individual personality profiles, feeding physics, day/night light transitions.",
+        highlights: ["Boids flocking algorithm modeling schooling fish dynamics", "Day-to-night dynamic ambient lighting transitions with moon phases", "Physics simulation of sinking fish flakes and buoyancy", "Persistent ecosystem state: fish names, colors, and tank decor saved"]
+      },
+      {
+        id: "calculator",
+        title: "Simple Calculator",
+        subtitle: "Chained Precision Calculation Engine",
+        github: "https://github.com/adrian-cali/simple-calculator",
+        image: "assets/projects/project-calculator.png",
+        tags: ["Vanilla JS", "HTML5", "CSS3", "Zero Frameworks"],
+        description: "Clean, keyboard-accessible calculator with chained calculations, floating precision logic, and session computation history.",
+        longDescription: "A minimalist calculator built with vanilla HTML, modern CSS, and JavaScript. Engineered with zero external dependencies, it features seamless keyboard input bindings and chained arithmetic.",
+        highlights: ["Native physical keyboard bindings for rapid computational entry", "Chained operation precedence and floating-point rounding precision", "Interactive session calculation ledger with replay capabilities", "Lightweight, framework-free footprint loading in milliseconds"]
+      }
+    ];
+
+    const LEADERSHIP_ORGS = [
+      {
+        id: "ssc",
+        name: "The PLM Supreme Student Council",
+        logo: "assets/logos/logo-plm-ssc.png",
+        years: "2025 – 2026",
+        roles: [{ title: "Director for Graphic Design – Graphic Designer", period: "2025 – 2026", details: ["Responsible for the creation and dissemination of engaging visual and multimedia content that supports institutional branding, publicity campaigns, and communication materials."] }]
+      },
+      {
+        id: "cesc",
+        name: "PLM College of Engineering Student Council",
+        logo: "assets/logos/logo-engineering.png",
+        dataLightLogo: "assets/logos/logo-engineering.png",
+        dataDarkLogo: "assets/logos/logo-engineering-dark.png",
+        years: "2023 – 2026",
+        roles: [
+          { title: "Public Relations Senior Officer – Graphic Designer", period: "2024 – 2026", details: ["In charge of publication materials for the dissemination of timely updates, declarations, and important information that are essential for the College of Engineering students.", "Served as Project Head for one of the council's major events, overseeing the planning, coordination, and execution of all event activities.", "Hosted an event while showcasing adept organizational prowess and adeptly fostering engaging environments."] },
+          { title: "Public Relations Junior Officer – Video Editor", period: "2023 – 2024", details: ["Edited promotional videos and announcements for college-wide engineering assemblies.", "Collaborated with executive councils to deliver crisp multimedia productions."] }
+        ]
+      },
+      {
+        id: "aws",
+        name: "AWS Cloud Club – Haribon",
+        logo: "assets/logos/logo-aws.png",
+        years: "2023 – 2026",
+        roles: [
+          { title: "Chief Creatives Officer", period: "2024 – 2026", details: ["Conceptualized and executed innovative campaigns, brand engagement and audience growth. Leveraged strategic insights to cultivate compelling content and maintain brand relevance.", "Created and enhanced the digital version of the organization's mascot called Bonee and Bowee."] },
+          { title: "Vice Chief Creatives Officer", period: "2023 – 2024", details: ["Co-directed creative assets, event pubmats, and visual guidelines for cloud computing workshops."] },
+          { title: "Cybersecurity and AI/ML Skill Builder", period: "2023 – 2024", details: ["Actively participated in a workshop-driven program, focusing on Cybersecurity and AI/ML, where hands-on sessions deepened skills in cloud security, threat detection, and machine learning."] }
+        ]
+      },
+      {
+        id: "msc",
+        name: "Microsoft Student Community – PLM",
+        logo: "assets/logos/logo-msc.png",
+        years: "2024 – 2025",
+        roles: [{ title: "Ambassadors Director", period: "2024 – 2025", details: ["Leads the Microforce Student Ambassadors Committee, oversees recruitment, training, and coordination of ambassadors.", "Serves as the primary liaison between ambassadors and committee leadership."] }]
+      },
+      {
+        id: "icpep",
+        name: "Institute of Computer Engineers of the Philippines.se – PLM Chapter",
+        logo: "assets/logos/logo-icpep.png",
+        years: "2023 – 2025",
+        roles: [
+          { title: "3rd Year Batch Representative", period: "2024 – 2025", details: ["Take charge of all matters relative to the membership concerns of the organization.", "Initiate the activities geared towards the physical and social development to the organization members."] },
+          { title: "Assistant Treasurer", period: "2023 – 2024", details: ["Maintained accurate financial records and audited funds for organization events."] }
+        ]
+      },
+      {
+        id: "jbecp",
+        name: "Junior Blockchain Education Consortium of the Philippines - Haribon",
+        logo: "assets/logos/logo-jbecp.png",
+        years: "2023 – 2025",
+        roles: [
+          { title: "Internal Relations Lead Officer", period: "2024 – 2025", details: ["Manages internal relationships, including communication, partnership development, and membership management."] },
+          { title: "Internal Affairs Junior Officer", period: "2023 – 2024", details: ["Supported internal operations by coordinating membership records, assisting in internal communication efforts, and contributing to the planning of member engagement activities."] }
+        ]
+      },
+      {
+        id: "gdsc",
+        name: "Google Developer Student Clubs – Pamantasan ng Lungsod ng Maynila",
+        logo: "assets/logos/logo-gdsc.png",
+        years: "2023 – 2025",
+        roles: [{ title: "Data Googler & DataCamp Scholar", period: "2023 – 2025", details: ["An active DataCamp scholar, honing technical proficiencies in programming, with a focused emphasis on Python."] }]
+      }
+    ];
+
+    const PUBMAT_IDS = [
+     "1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.jpg", "8.jpg", "9.png",
+      "10.png", "11.png", "12.png", "13.png", "14.png", "15.png", "16.jpg", "17.png",
+      "18.png", "19.jpg", "20.png", "21.png", "22.png", "23.png", "24.png", "25.png",
+      "26.png", "27.png"
+    ];
+
+    const VIDEOS = [
+      { id: "WlcT8eIWSEY", title: "Meet Bonee | AWSCC-Haribon Official Mascot", subtitle: "Official Animation & Character Launch" },
+      { id: "A7tP8WPnFL8", title: "CEng SC AVP", subtitle: "College of Engineering Student Council Reel" },
+      { id: "1950U6GJLEQ", title: "Infomercial | Aluminum-Air Battery", subtitle: "Electrochemistry Engineering Explainer" },
+      { id: "fNbacPD5TJk", title: "Discord Love - Trailer", subtitle: "CPAR Narrative Cinematic Trailer" },
+      { id: "mgtmftxiIRs", title: "#iPower Campaign", subtitle: "Advocacy & Energy Efficiency Feature" },
+      { id: "e5rO-hVh5v4", title: "General Assembly SDE", subtitle: "Same Day Edit College Convention" },
+      { id: "aNHX3bFCUqA", title: "English PETA", subtitle: "Academic Showcase & Performance Video" }
+    ];
+
+    const GALLERY_IDS = [
+      "0.jpeg", "1.jpeg", "2.jpg", "3.png", "4.PNG", "5.jpg", "6.JPG", "7.jpg", "8.JPG", "9.JPG",
+      "10.JPG", "11.JPG", "12.jpg", "13.JPG", "14.jpg", "15.jpg", "16.JPG", "17.JPG", "18.JPG", "19.jpg",
+      "20.jpg", "21.jpeg", "22.jpeg", "23.JPG", "24.jpg", "25.PNG", "26.jpg", "27.jpeg", "28.jpg", "29.jpeg",
+      "30.DNG", "31.jpg", "32.JPG", "33.jpg", "34.JPG", "35.jpg", "36.JPG", "37.jpg", "38.jpeg", "39.JPG"
+    ];
+
+    const ALL_TECH_STACK = [
+      { category: "Programming Languages", skills: ["Python", "C", "C++", "Java", "JavaScript", "PHP", "SQL", "HTML", "CSS", "C#"] },
+      { category: "Backend & Cloud", skills: ["FastAPI", "WebSockets", "Node.js", "Docker", "Casbin", "MinIO", "Firebase", "Redis", "Celery"] },
+      { category: "Geospatial & Compute", skills: ["Uber H3", "VROOM", "OSRM", "PostgreSQL", "SQLite", "Pandas", "VADER"] },
+      { category: "Embedded & Hardware", skills: ["ESP32", "Arduino", "Adafruit BNO055", "Cisco Packet Tracer", "MATLAB"] },
+      { category: "Frontend & Mobile", skills: ["Flutter", "Tailwind CSS", "Streamlit", "Cosmos Dev Kit"] },
+      { category: "Design & Multimedia", skills: ["Figma", "Canva", "Adobe Photoshop", "Adobe Illustrator", "Premiere Pro", "InDesign"] },
+      { category: "Artificial Intelligence", skills: ["Gemini AI", "ChatGPT", "Claude", "Scikit-Learn", "SpeechRecognition", "gTTS"] }
+    ];
+
+    function renderProjects() {
+      const container = document.getElementById('projectsContainer');
+      container.innerHTML = PROJECTS.map((proj, idx) => `
+        <div onclick="openProjectModal(${idx})" class="cursor-pointer rounded-3xl ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] overflow-hidden hover:border-[#1877F2] dark:hover:border-blue-500 hover:shadow-xl transition-all duration-300 flex flex-col group ${idx === PROJECTS.length - 1 && PROJECTS.length % 3 === 1 ? 'lg:col-start-2' : ''}">
+          <div class="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-100 dark:bg-zinc-800">
+            <img src="${proj.image}" alt="${proj.title}" onerror="this.src='https://placehold.co/600x380/1877F2/ffffff?text=${encodeURIComponent(proj.title)}'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+          </div>
+          <div class="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
+            <div>
+              <div class="text-xs font-semibold text-[#1877F2] dark:text-blue-400 uppercase tracking-wider mb-1">${proj.subtitle}</div>
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#1877F2] transition-colors">${proj.title}</h3>
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-300 line-clamp-3 mt-2">${proj.description}</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5 pt-2 border-t border-black/5 dark:border-white/10">
+              ${proj.tags.slice(0, 4).map(tag => `<span class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-black/[0.04] dark:bg-white/[0.08] text-slate-700 dark:text-zinc-300">${tag}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderLeadership() {
+      const container = document.getElementById('leadershipAccordionContainer');
+      container.innerHTML = LEADERSHIP_ORGS.map(org => `
+        <div class="rounded-2xl ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] overflow-hidden transition-all">
+          <button onclick="toggleAccordion('${org.id}')" class="w-full flex items-center justify-between p-4 text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <img src="${org.logo}" ${org.id === 'cesc' ? 'data-light-src="assets/logos/logo-engineering.png" data-dark-src="assets/logos/logo-engineering-dark.png"' : ''} alt="${org.name}" class="w-10 h-10 rounded-xl object-contain bg-white dark:bg-zinc-800 p-1 border flex-shrink-0 ${org.id === 'cesc' ? 'cesc-logo-img' : ''}"/>
+              <div class="min-w-0">
+                <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">${org.name}</h4>
+                <span class="text-[11px] font-medium text-[#1877F2]">${org.years}</span>
+              </div>
+            </div>
+            <svg id="chevron-${org.id}" class="w-4 h-4 text-slate-400 transform transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="content-${org.id}" class="hidden px-4 pb-4 pt-1 space-y-2 border-t border-black/5 dark:border-white/5">
+            ${org.roles.map((role, rIdx) => `
+              <div onclick="openRoleModal('${org.id}', ${rIdx})" class="cursor-pointer p-3 rounded-xl bg-black/[0.03] dark:bg-white/5 hover:bg-blue-500/10 transition-all">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs font-bold text-slate-800 dark:text-zinc-200">${role.title}</span>
+                  <span class="text-[10px] text-slate-500 whitespace-nowrap">${role.period}</span>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-zinc-400 mt-1 line-clamp-2">${role.details[0]}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleAccordion(id) {
+      const content = document.getElementById(`content-${id}`);
+      const chevron = document.getElementById(`chevron-${id}`);
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        chevron.classList.add('rotate-180');
+      } else {
+        content.classList.add('hidden');
+        chevron.classList.remove('rotate-180');
+      }
+    }
+
+    function renderPubmats() {
+      const grid = document.getElementById('pubmatsGrid');
+      grid.innerHTML = PUBMAT_IDS.map((id, idx) => `
+        <div onclick="openLightbox(${idx}, 'pubmats')" class="group cursor-pointer relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-200 dark:bg-zinc-800 border border-black/[0.08] dark:border-white/[0.12] shadow-sm hover:shadow-lg transition-all duration-300">
+          <img src="assets/pubmats/pubmat-${id}" alt="Pubmat" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/300x400/1877F2/ffffff?text=Design';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy"/>
+        </div>
+      `).join('');
+    }
+
+    function renderVideos() {
+      const carousel = document.getElementById('videoCarousel');
+      carousel.innerHTML = VIDEOS.map(vid => `
+        <a href="https://www.youtube.com/watch?v=${vid.id}" target="_blank" rel="noopener noreferrer" class="cursor-pointer relative flex-shrink-0 w-64 sm:w-72 rounded-2xl overflow-hidden ios-glass bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.08] dark:border-white/[0.12] hover:border-[#1877F2] transition-all duration-300 group block">
+          <div class="relative aspect-video w-full overflow-hidden bg-slate-900">
+            <img src="https://img.youtube.com/vi/${vid.id}/hqdefault.jpg" alt="${vid.title}" referrerpolicy="no-referrer" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"/>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="p-4">
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-[#1877F2] transition-colors">${vid.title}</h4>
+            <p class="text-xs text-slate-500 dark:text-zinc-400 truncate mt-1">${vid.subtitle}</p>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    function renderGalleryPreview() {
+      const grid = document.getElementById('galleryPreviewGrid');
+      const previewIds = GALLERY_IDS.slice(0, 12);
+      grid.innerHTML = previewIds.map((id, idx) => `
+        <div onclick="openLightbox(${idx}, 'gallery')" class="group cursor-pointer relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-200 dark:bg-zinc-800 border border-black/[0.08] dark:border-white/[0.12] shadow-sm hover:shadow-lg transition-all duration-300 ${idx >= 10 ? 'md:hidden' : ''}">
+          <img src="assets/gallery/gallery-${id}" alt="Gallery Photo" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/300x400/1877F2/ffffff?text=Photo';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy"/>
+        </div>
+      `).join('') + `
+        <button onclick="openGalleryModal()" class="sm:hidden col-span-2 flex items-center justify-end gap-1.5 text-sm font-bold text-[#1877F2] dark:text-blue-400 hover:underline">
+          <span>SEE MORE (40) →</span>
+        </button>
+      `;
+    }
+
+    const modal = document.getElementById('generalModal');
+    const modalDialog = document.getElementById('modalDialog');
+    const modalBody = document.getElementById('modalBody');
+
+    const imageLightboxModal = document.getElementById('imageLightboxModal');
+    const lightboxImage = document.getElementById('lightboxImage');
+
+    let currentLightboxArray = [];
+    let currentLightboxIndex = 0;
+    let currentLightboxType = 'pubmats';
+    let lightboxSwipeStart = null;
+
+    lightboxImage.addEventListener('pointerdown', event => {
+      if (event.pointerType !== 'touch') return;
+      lightboxSwipeStart = { x: event.clientX, y: event.clientY };
+    });
+
+    lightboxImage.addEventListener('pointerup', event => {
+      if (!lightboxSwipeStart || event.pointerType !== 'touch') return;
+      const deltaX = event.clientX - lightboxSwipeStart.x;
+      const deltaY = event.clientY - lightboxSwipeStart.y;
+      lightboxSwipeStart = null;
+
+      if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+      lightboxNavigate(deltaX < 0 ? 1 : -1);
+    });
+
+    lightboxImage.addEventListener('pointercancel', () => {
+      lightboxSwipeStart = null;
+    });
+
+    function openModal() {
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modalDialog.classList.remove('scale-95');
+      modalDialog.classList.add('scale-100');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modalDialog.classList.remove('scale-100');
+      modalDialog.classList.add('scale-95');
+      document.body.style.overflow = '';
+      setTimeout(() => { modalBody.innerHTML = ''; }, 300);
+    }
+
+    function openLightbox(index, type) {
+      currentLightboxType = type;
+      currentLightboxArray = type === 'pubmats' ? PUBMAT_IDS : GALLERY_IDS;
+      currentLightboxIndex = index;
+      lightboxImage.src = getLightboxImageSrc();
+      imageLightboxModal.classList.remove('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function getLightboxImageSrc() {
+      const folder = currentLightboxType === 'pubmats' ? 'pubmats' : 'gallery';
+      const prefix = currentLightboxType === 'pubmats' ? 'pubmat-' : 'gallery-';
+      return `assets/${folder}/${prefix}${currentLightboxArray[currentLightboxIndex]}`;
+    }
+
+    function lightboxNavigate(direction) {
+      currentLightboxIndex = (currentLightboxIndex + direction + currentLightboxArray.length) % currentLightboxArray.length;
+      lightboxImage.src = getLightboxImageSrc();
+    }
+
+    function closeLightbox() {
+      imageLightboxModal.classList.add('opacity-0', 'pointer-events-none');
+      lightboxImage.src = '';
+      document.body.style.overflow = '';
+    }
+
+    function openTechModal() {
+      modalBody.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-4">
+            <div>
+              <span class="text-xs font-bold text-[#1877F2] uppercase tracking-wider">STACK</span>
+              <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">Tech Stack</h3>
+              <p class="text-xs text-slate-500 dark:text-zinc-400 mt-1">The tools, frameworks, and platforms I use across frontend, backend, AI, and design workflows.</p>
+            </div>
+          </div>
+          <div class="space-y-6 pt-2">
+            ${ALL_TECH_STACK.map(group => `
+              <div>
+                <h4 class="text-xs font-bold text-[#1877F2] dark:text-blue-400 uppercase tracking-wider mb-3">${group.category}</h4>
+                <div class="flex flex-wrap gap-2">
+                  ${group.skills.map(skill => `<span class="px-3.5 py-1.5 rounded-xl text-xs font-medium ios-glass bg-white/80 dark:bg-zinc-800 border border-black/10 dark:border-white/15 text-slate-800 dark:text-zinc-200 shadow-sm">${skill}</span>`).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      openModal();
+    }
+
+    function openGalleryModal() {
+      modalBody.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-4">
+            <div>
+              <span class="text-xs font-bold text-[#1877F2] uppercase tracking-wider">COLLECTION</span>
+              <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">Personal Gallery (40 Photos)</h3>
+              <p class="text-xs text-slate-500 dark:text-zinc-400 mt-1">Outside the developer</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[65vh] overflow-y-auto pr-1">
+            ${GALLERY_IDS.map((id, idx) => `
+              <div onclick="openLightbox(${idx}, 'gallery')" class="group cursor-pointer relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-200 dark:bg-zinc-800 border border-black/5 dark:border-white/10 shadow-sm hover:shadow-md transition-all">
+                <img src="assets/gallery/gallery-${id}" alt="Photo" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/300x400/1877F2/ffffff?text=Photo'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"/>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      openModal();
+    }
+
+    function openProjectModal(index) {
+      const proj = PROJECTS[index];
+      modalBody.innerHTML = `
+        <div class="space-y-5">
+          <div class="relative w-full h-56 sm:h-64 rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-800">
+            <img src="${proj.image}" alt="${proj.title}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/640x360/1877F2/ffffff?text=${encodeURIComponent(proj.title)}'"/>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-[#1877F2] uppercase tracking-wider">${proj.subtitle}</span>
+            <h3 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">${proj.title}</h3>
+            <p class="text-sm sm:text-base text-slate-600 dark:text-zinc-300 mt-3 leading-relaxed">${proj.longDescription}</p>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Key Highlights</h4>
+            <ul class="space-y-1.5">
+              ${proj.highlights.map(h => `<li class="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-zinc-300"><span class="text-blue-500">✓</span><span>${h}</span></li>`).join('')}
+            </ul>
+          </div>
+          <div class="pt-4 border-t border-black/10 dark:border-white/10 flex justify-end">
+            <a href="${proj.github}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-[#1877F2] hover:bg-blue-600 text-white shadow transition-all">View on GitHub</a>
+          </div>
+        </div>
+      `;
+      openModal();
+    }
+
+    function openWorkModal() {
+      modalBody.innerHTML = `
+        <div class="space-y-4">
+          <div class="flex items-center gap-4">
+            <img 
+              src="assets/logos/logo-spm.png" 
+              data-light-src="assets/logos/logo-spm.png"
+              data-dark-src="assets/logos/logo-spm-dark.png"
+              alt="SPM" 
+              class="w-14 h-14 rounded-2xl object-contain bg-white dark:bg-zinc-800 p-2 border spm-logo-img" 
+            />
+            <div>
+              <span class="text-xs font-bold text-[#1877F2] uppercase tracking-wider">Internship Milestone</span>
+              <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Backend Developer Intern</h3>
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-300">S.P. Madrid & Associates Law Firm • 240 Hours (2026)</p>
+            </div>
+          </div>
+          <div class="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-zinc-300 pt-2 leading-relaxed">
+            <p><strong>FastAPI Services:</strong> Developed scalable Python backend services, dynamic form builders, user CRUD modules, and automated validations.</p>
+            <p><strong>Security & File Systems:</strong> Enforced role-based access control via Casbin, created audit logging, and integrated MinIO object storage.</p>
+            <p><strong>Geospatial Optimization:</strong> Deployed VROOM, OSRM, and Uber H3 hexagonal spatial indexing for automated route dispatch.</p>
+          </div>
+        </div>
+      `;
+      updateThemeLogos();
+      openModal();
+    }
+
+    function openEduModal(type) {
+      let content = '';
+      if (type === 'college') {
+        content = `
+          <div class="space-y-5">
+            <div class="flex items-center gap-4">
+              <img src="assets/logos/logo-plm.png" alt="PLM Logo" class="w-14 h-14 rounded-2xl object-contain bg-white dark:bg-zinc-800 p-2 border border-black/5 dark:border-white/10 flex-shrink-0" onerror="this.src='https://placehold.co/100x100/1877F2/ffffff?text=PLM'"/>
+              <div>
+                <span class="text-xs font-bold text-[#1877F2] uppercase">Academic Excellence</span>
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-0.5">Bachelor of Science in Computer Engineering</h3>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-300">Pamantasan ng Lungsod ng Maynila (2022 – 2026)</p>
+              </div>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-400/20 border border-slate-400/30 text-slate-700 dark:text-slate-300 space-y-1">
+              <h4 class="font-bold text-sm">Graduated MAGNA CUM LAUDE</h4>
+              <p class="text-xs">DOST-SEI Merit Scholar • College of Engineering</p>
+            </div>
+          </div>
+        `;
+      } else if (type === 'shs') {
+        content = `
+          <div class="space-y-5">
+            <div class="flex items-center gap-4">
+              <img src="assets/logos/logo-dominican.png" alt="Dominican Logo" class="w-14 h-14 rounded-2xl object-contain bg-white dark:bg-zinc-800 p-2 border border-black/5 dark:border-white/10 flex-shrink-0" onerror="this.src='https://placehold.co/100x100/1877F2/ffffff?text=DSM'"/>
+              <div>
+                <span class="text-xs font-bold text-[#1877F2] uppercase">Secondary Education</span>
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-0.5">STEM Strand (Science, Technology, Engineering, & Mathematics)</h3>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-300">Dominican School Manila (2020 – 2022)</p>
+              </div>
+            </div>
+            <div class="p-4 rounded-2xl bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 space-y-1">
+              <h4 class="font-bold text-sm">Graduated WITH HIGHEST HONORS</h4>
+              <p class="text-xs">Gold Medalist</p>
+            </div>
+          </div>
+        `;
+      } else {
+        content = `
+          <div class="space-y-5">
+            <div class="flex items-center gap-4">
+              <img src="assets/logos/logo-dominican.png" alt="Dominican Logo" class="w-14 h-14 rounded-2xl object-contain bg-white dark:bg-zinc-800 p-2 border border-black/5 dark:border-white/10 flex-shrink-0" onerror="this.src='https://placehold.co/100x100/1877F2/ffffff?text=DSM'"/>
+              <div>
+                <span class="text-xs font-bold text-[#1877F2] uppercase">Junior High School</span>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-zinc-300 mt-1">Dominican School Manila (2016 – 2020)</p>
+              </div>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-400/20 border border-slate-400/30 text-slate-700 dark:text-slate-300 space-y-1">
+              <h4 class="font-bold text-sm">Graduated WITH HIGH HONORS</h4>
+              <p class="text-xs">Silver Medalist</p>
+            </div>
+          </div>
+        `;
+      }
+      modalBody.innerHTML = content;
+      openModal();
+    }
+
+    function openRoleModal(orgId, roleIndex) {
+      const org = LEADERSHIP_ORGS.find(o => o.id === orgId);
+      if (!org) return;
+      const role = org.roles[roleIndex];
+      if (!role) return;
+
+      const isDark = document.documentElement.classList.contains('dark');
+      let activeLogo = org.logo;
+      if (isDark && org.dataDarkLogo) {
+        activeLogo = org.dataDarkLogo;
+      }
+
+      modalBody.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-start gap-4">
+            <img src="${activeLogo}" alt="Logo" class="w-14 h-14 rounded-2xl object-contain bg-white dark:bg-zinc-800 p-2 border border-black/5 dark:border-white/10 flex-shrink-0 ${org.dataDarkLogo ? 'cesc-logo-img' : ''}" onerror="this.src='https://placehold.co/100x100/1877F2/ffffff?text=ORG'"/>
+            <div class="min-w-0">
+              <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-tight">${role.title}</h3>
+              <p class="text-xs font-semibold text-[#1877F2] mt-0.5">${org.name}</p>
+              <p class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">Year ${role.period}</p>
+            </div>
+          </div>
+
+          <div class="space-y-3 pt-2">
+            <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-400">KEY CONTRIBUTIONS & RESPONSIBILITIES</h4>
+            <div class="space-y-2.5">
+              ${role.details.map(item => `
+                <div class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-zinc-300">
+                  <span class="text-[#1877F2] mt-0.5 flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  </span>
+                  <span class="leading-relaxed">${item}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+      openModal();
+    }
+
+    function scrollPubmats(direction) {
+      const grid = document.getElementById('pubmatsGrid');
+      grid.scrollBy({ left: direction * 360, behavior: 'smooth' });
+    }
+
+    function scrollVideoCarousel(direction) {
+      const carousel = document.getElementById('videoCarousel');
+      carousel.scrollBy({ left: direction * 320, behavior: 'smooth' });
+    }
+
+    function updatePubmatsProgress() {
+      const grid = document.getElementById('pubmatsGrid');
+      const bar = document.getElementById('pubmatsProgressBar');
+      const label = document.getElementById('pubmatsProgressLabel');
+      if (!grid || !bar) return;
+      const maxScroll = grid.scrollWidth - grid.clientWidth;
+      const pct = maxScroll > 0 ? Math.min(100, Math.max(0, Math.round((grid.scrollLeft / maxScroll) * 100))) : 100;
+      bar.style.width = Math.max(12, pct) + '%';
+      if (label) label.textContent = pct + '%';
+    }
+
+    function updateVideosProgress() {
+      const carousel = document.getElementById('videoCarousel');
+      const bar = document.getElementById('videosProgressBar');
+      const label = document.getElementById('videosProgressLabel');
+      if (!carousel || !bar) return;
+      const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+      const pct = maxScroll > 0 ? Math.min(100, Math.max(0, Math.round((carousel.scrollLeft / maxScroll) * 100))) : 100;
+      bar.style.width = Math.max(16, pct) + '%';
+      if (label) label.textContent = pct + '%';
+    }
+
+    function updateThemeLogos() {
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      document.querySelectorAll('.spm-logo-img').forEach(img => {
+        const darkSrc = img.getAttribute('data-dark-src');
+        const lightSrc = img.getAttribute('data-light-src');
+        if (isDark && darkSrc) img.src = darkSrc;
+        else if (!isDark && lightSrc) img.src = lightSrc;
+      });
+
+      document.querySelectorAll('.cesc-logo-img').forEach(img => {
+        const darkSrc = img.getAttribute('data-dark-src');
+        const lightSrc = img.getAttribute('data-light-src');
+        if (isDark && darkSrc) img.src = darkSrc;
+        else if (!isDark && lightSrc) img.src = lightSrc;
+      });
+    }
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('adrian_theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      updateThemeLogos();
+    }
+
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('adrian_theme', isDark ? 'dark' : 'light');
+      updateThemeLogos();
+    });
+
+    function toggleMobileMenu() {
+      const overlay = document.getElementById('mobileMenuOverlay');
+      const drawer = document.getElementById('mobileMenuDrawer');
+      if (overlay.classList.contains('hidden')) {
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+          overlay.classList.remove('opacity-0');
+          drawer.classList.remove('translate-x-full');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+      } else {
+        overlay.classList.add('opacity-0');
+        drawer.classList.add('translate-x-full');
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+        }, 300);
+        document.body.style.overflow = '';
+      }
+    }
+
+    function updateClock() {
+      const clockEl = document.getElementById('manilaClock');
+      if (!clockEl) return;
+      const now = new Date();
+      clockEl.textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(now) + " PST";
+    }
+
+    window.onload = function() {
+      initTheme();
+      renderProjects();
+      renderLeadership();
+      renderPubmats();
+      renderVideos();
+      renderGalleryPreview();
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      const pubmatsEl = document.getElementById('pubmatsGrid');
+      const videosEl = document.getElementById('videoCarousel');
+      if (pubmatsEl) {
+        pubmatsEl.addEventListener('scroll', updatePubmatsProgress);
+        setTimeout(updatePubmatsProgress, 100);
+      }
+      if (videosEl) {
+        videosEl.addEventListener('scroll', updateVideosProgress);
+        setTimeout(updateVideosProgress, 100);
+      }
+    };
+  </script>
+</body>
+</html>
