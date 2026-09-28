@@ -730,8 +730,8 @@
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
     </button>
 
-    <div class="relative z-20 max-w-[96vw] max-h-[96vh] flex items-center justify-center overflow-hidden">
-      <img id="lightboxImage" src="" alt="Lightbox View" draggable="false" class="max-w-[94vw] max-h-[94vh] w-auto h-auto object-contain rounded-2xl shadow-2xl select-none touch-pan-y" />
+    <div class="relative z-20 max-w-[96vw] max-h-[96vh] flex items-center justify-center overflow-auto">
+      <img id="lightboxImage" src="" alt="Lightbox View" title="Click to zoom" draggable="false" class="max-w-[94vw] max-h-[94vh] w-auto h-auto object-contain rounded-2xl shadow-2xl select-none touch-pan-y cursor-zoom-in transition-transform duration-200" />
     </div>
   </div>
 
@@ -1068,6 +1068,24 @@
     let currentLightboxIndex = 0;
     let currentLightboxType = 'pubmats';
     let lightboxSwipeStart = null;
+    let lightboxIsZoomed = false;
+
+    function toggleLightboxZoom() {
+      lightboxIsZoomed = !lightboxIsZoomed;
+      lightboxImage.classList.toggle('scale-150', lightboxIsZoomed);
+      lightboxImage.classList.toggle('cursor-zoom-in', !lightboxIsZoomed);
+      lightboxImage.classList.toggle('cursor-zoom-out', lightboxIsZoomed);
+      lightboxImage.title = lightboxIsZoomed ? 'Click to zoom out' : 'Click to zoom';
+    }
+
+    function resetLightboxZoom() {
+      lightboxIsZoomed = false;
+      lightboxImage.classList.remove('scale-150', 'cursor-zoom-out');
+      lightboxImage.classList.add('cursor-zoom-in');
+      lightboxImage.title = 'Click to zoom';
+    }
+
+    lightboxImage.addEventListener('click', toggleLightboxZoom);
 
     lightboxImage.addEventListener('pointerdown', event => {
       if (event.pointerType !== 'touch') return;
@@ -1107,6 +1125,7 @@
       currentLightboxType = type;
       currentLightboxArray = type === 'pubmats' ? PUBMAT_IDS : GALLERY_IDS;
       currentLightboxIndex = index;
+      resetLightboxZoom();
       lightboxImage.src = getLightboxImageSrc();
       imageLightboxModal.classList.remove('opacity-0', 'pointer-events-none');
       document.body.style.overflow = 'hidden';
@@ -1120,11 +1139,13 @@
 
     function lightboxNavigate(direction) {
       currentLightboxIndex = (currentLightboxIndex + direction + currentLightboxArray.length) % currentLightboxArray.length;
+      resetLightboxZoom();
       lightboxImage.src = getLightboxImageSrc();
     }
 
     function closeLightbox() {
       imageLightboxModal.classList.add('opacity-0', 'pointer-events-none');
+      resetLightboxZoom();
       lightboxImage.src = '';
       document.body.style.overflow = '';
     }
