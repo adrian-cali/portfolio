@@ -117,11 +117,11 @@
       border-color: #3f3f46;
       box-shadow: 0 20px 30px rgba(0,0,0,0.4);
     }
-    .circle-portrait img {
+    /* .circle-portrait img {
       transform: scale(1.1) translateY(12px);
       transform-origin: center 18%;
       transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
+    } */
 
     /* Cutout die-cut sticker layer that pops out with ultra-smooth spring */
     .cutout-sticker {
@@ -162,8 +162,18 @@
     }
 
     @media (hover: hover) and (pointer: fine) {
-      .sticker-container:hover .circle-portrait img {
-        transform: scale(1.65) translateY(22px);
+      .sticker-container:hover .circle-portrait {
+        transform: scale(0.8) translateY(10px);
+        opacity: 0;
+      }
+      .sticker-container:hover .cutout-sticker {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .sticker-container:hover .badge-item {
+        opacity: 1;
+        transform: scale(1) translate(0, 0);
       }
     }
   </style>
@@ -317,7 +327,7 @@
                 <img 
                   src="assets/about-me-picture.png" 
                   alt="Adrian Calingasin" 
-                  class="w-full h-full object-cover object-top"
+                  class="w-full h-full object-cover object-top scale-110 translate-y-3"
                 />
               </div>
 
